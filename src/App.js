@@ -1,14 +1,16 @@
 import './App.css';
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom/client';
-import { click } from '@testing-library/user-event/dist/click';
+import './components/Item';
+import Item from './components/Item';
+import Score from './components/Score';
 
 function App() {
   const [items, setItems] = useState(
     {
-      '1': {value: 1, isClicked: false},
-      '2': {value: 2, isClicked: false},
-      '3': {value: 3, isClicked: false}
+      '1': {value: 1, 'isClicked': false},
+      '2': {value: 2, 'isClicked': false},
+      '3': {value: 3, 'isClicked': false}
     });
 
   const [score, setScore] = useState(0)
@@ -31,21 +33,41 @@ function App() {
     //Sets the is clicked property of the item that was just clicked to true
     const newItems = items
     const clickedItem = newItems[id]
-    clickedItem.isClicked = true
+    clickedItem['isClicked'] = true
     setItems(newItems)
     //
 
     setScore(score + 1)
   }
 
-  return (
-      shuffle([0,1,2]).map((index) => {
-        const keys = Object.keys(items)
-        const key = keys[index]
-        const item = items[key]
+  const isSelected = () => {
+    // Sets the high score as the current score
+    setHighScore(score)
 
-        return <Item key = {key} value = {item.value}/> 
-      })
+    //Loops through the items object and sets each of the isClicked properties to false
+    for (const item in Object.keys(items)) {
+      const currItem = items[item]
+      currItem['isClicked'] = false
+    }
+  }
+
+  return (
+    <div>
+      <Score score = {score} highScore = {highScore}/>
+      {shuffle([0,1,2]).map((index) => {
+        // List of keys in the items object
+        const keys = Object.keys(items)
+        // The current key selected
+        const key = keys[index]
+        // The current item object selected
+        const item = items[key]
+        if (item['isClicked']) {
+          return <Item key = {key} value = {item.value} onClick = {isSelected}/>
+        } else {
+          return <Item key = {key} value = {item.value} onClick = {notSelected}/>
+        }
+      })}
+    </div>
   );
 }
 
